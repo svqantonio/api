@@ -17,7 +17,7 @@ class ProductController {
     public function show($id) {
         $providerController = new ProviderController();
         if ($providerController->auth()) {
-            $product = ProductModel::show($id);
+            $product = ProductModel::show($id, 'id');
             echo json_encode($product, true);
             return;
         }

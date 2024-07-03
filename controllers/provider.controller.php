@@ -1,7 +1,7 @@
 <?php
     class ProviderController{
 
-        public function auth() {
+        public function auth() { //Funcion que sirve para comprobar que estés usando autorizacion para usar las funciones de la api
             if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
                 $provider_id = $_SERVER['PHP_AUTH_USER'];
                 $secret_key = $_SERVER['PHP_AUTH_PW'];
@@ -51,6 +51,27 @@
             $secret_key = str_replace('$', 'a', crypt($data['email'].$data['surnames'].$data['name'],'$2a$07$afartwetsdAD52356FEDGsfhsd$'));
             $data = array('name' => $data['name'], 'surnames' => $data['surnames'], 'email' => $data['email'], 'provider_id' => $provider_id, 'secret_key' => $secret_key);
             $provider = ProviderModel::create($data);
+            echo json_encode($provider, true);
+            return;
+        }
+
+        public function destroy($id) {
+            $prov_products = ProductModel::show($id, 'provider');
+            //print_r($prov_products);
+            if (count($prov_products) > 0) {
+                foreach ($prov_products as $key => $product) {
+                    $destroy = ProductModel::delete($product['id']);
+                    echo json_encode($destroy, true);
+                }
+            } else {
+                $error = array(
+                    "status" => "error",
+                    "message" => "Provider without products"
+                );
+                echo json_encode($error, true);
+                return;
+            }
+            $provider = ProviderModel::destroy($id);
             echo json_encode($provider, true);
             return;
         }

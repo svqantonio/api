@@ -2,11 +2,27 @@
 
     class ProviderModel {
 
-        public static function index() {
+        public static function index() { //Funcion para mostrar todos los providers
             global $conn;
             $stmt = $conn->prepare('SELECT * FROM providers');
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public static function destroy($id) {
+            global $conn;
+            $stmt = $conn->prepare('DELETE FROM providers WHERE id = :id');
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            if ($stmt->execute())
+                return [
+                    "status" => "success",
+                    "message" => "Provider deleted successfully"
+                ];
+            else
+                return [
+                    "status" => "error",
+                    "message" => print_r($stmt->errorInfo(), true)
+                ];
         }
 
         public static function create($data) {
